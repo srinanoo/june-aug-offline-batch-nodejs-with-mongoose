@@ -1,4 +1,4 @@
-const TraineeModel = require('../models/traineeModel');
+const { TraineeModel } = require('../models/traineeModel');
 
 // Read the file content using Async
 async function readTrainees(req, res) {
@@ -7,7 +7,7 @@ async function readTrainees(req, res) {
         // const { name, id } = obj;
         // const data = `{$or: [{name: ${name}}, {id: ${id}}]}`;
 
-        const results = await TraineeModel.find(obj);
+        const results = await TraineeModel.find(obj).sort({"_id": -1});
         if(results.length > 0)
             res.json({"data": results, "msg": "success"});
         else
@@ -24,8 +24,9 @@ async function readTrainees(req, res) {
 // Read the file content using Async
 async function readSpecificTrainee(req, res) {
     try {
-        const obj = req.body;
-        const results = await TraineeModel.find(obj);
+        const obj = req.params.id;
+        console.log(obj);
+        const results = await TraineeModel.find({_id: obj}).sort({"_id": -1});
         if(results.length > 0)
             res.json({"data": results, "msg": "success"});
         else
@@ -39,33 +40,38 @@ async function readSpecificTrainee(req, res) {
 async function createTrainee(req, res) {
     try {
         const obj = req.body;
+        console.log(obj);
+    
         if(JSON.stringify(obj) !== "{}") {
             const resultsArr = await TraineeModel.find({"name": obj.name});
+
+            console.log(resultsArr);
     
             if(resultsArr.length > 0)
-                res.json({"msg":"Trainee already Exists!"});
+                res.json({"error":"Trainee already Exists!", "msg": ""});
             else {
                 const insertTrainee = new TraineeModel(obj);
                 await insertTrainee.save();
-                res.json({"msg":"Trainee has been created successfully!"});
+                res.json({"error": "", "msg":"Trainee has been created successfully!"});
             }
         } else
-            res.json({"msg":"No Data to Create"});
+            res.json({"error":"No Data to Create", "msg": ""});
     } catch (err) {
-        res.json({ "error": err.message });
+        res.json({ "error": err.message, "msg": "" });
     }
 }
 
 async function deleteTrainee(req, res) {
     try {
         const obj = req.body;
+        console.log(obj);
         if(JSON.stringify(obj) !== "{}") {
-            const resultsArr = await TraineeModel.find({"name": obj.name});
+            const resultsArr = await TraineeModel.find({"_id": obj.id});
     
             if(resultsArr.length > 0) {
-                const results = await TraineeModel.deleteOne(obj);
+                const results = await TraineeModel.deleteOne({"_id": obj.id});
                 console.log(results);
-                if(results.deletedCount !== "")
+                if(results.deletedCount > 0)
                     res.json({"msg":"Trainee has been deleted successfully!"});
                 else
                     res.json({"msg":"Unable to delete trainee"});
@@ -83,24 +89,24 @@ async function updateTrainee(req, res) {
     try {
         const obj = req.body;
         if(JSON.stringify(obj) !== "{}") {
-            const resultsArr = await TraineeModel.find({"name": obj.name});
+            const resultsArr = await TraineeModel.find({"_id": obj.id});
     
             if(resultsArr.length > 0) {
                 const opts = { runValidators: true };
 
-                const results = await TraineeModel.updateOne({"name": obj.name}, {$set: obj}, opts);
+                const results = await TraineeModel.updateOne({"_id": obj.id}, {$set: obj}, opts);
                 console.log(results);
                 if(results.modifiedCount !== "")
-                    res.json({"msg":"Trainee has been updated successfully!"});
+                    res.json({"msg":"Trainee has been updated successfully!", "error": ""});
                 else
-                    res.json({"msg":"Unable to update trainee"});
+                    res.json({"msg": "", "error": "Unable to update trainee"});
             } else {
-                res.json({"msg":"No Data to Update"});   
+                res.json({"msg": "", "error": "No Data to Update"});   
             }
         } else
-            res.json({"msg":"No Data to Update"});
+            res.json({"msg":"", "error": "No Data to Update"});
     } catch (err) {
-        res.json({ "error": err.message });
+        res.json({ "msg": "", "error": err.message });
     }
 }
 

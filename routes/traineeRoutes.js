@@ -5,7 +5,7 @@ const router = require('express').Router();
 router.get("/readTrainees", traineesControllers.readTrainees);
 
 // /readSpecificTrainee
-router.get("/readSpecificTrainee", traineesControllers.readSpecificTrainee);
+router.get("/readSpecificTrainee/:id", traineesControllers.readSpecificTrainee);
 
 // /createTrainee
 router.post("/createTrainee", traineesControllers.createTrainee);
