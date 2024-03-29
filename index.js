@@ -9,6 +9,10 @@ app.use(cors({
     origin:['http://127.0.0.1:5173', 'http://localhost:5173', ]
 }));
 
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+
 const traineesRoutes = require('./routes/traineeRoutes');
 app.use("/api/v1/trainees", traineesRoutes); // http://localhost:5000/api/v1/trainees/
 

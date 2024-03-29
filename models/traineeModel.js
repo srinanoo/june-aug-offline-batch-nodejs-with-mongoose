@@ -7,13 +7,13 @@ const TraineeSchema = new Schema({
     name: {
         type: [String, "Please enter only String for Trainee Name!"],
         required: [true, "Please send the name of the Trainee!"],
-        validate: {
-            validator: function(email) {
-                let emailV = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
-                return emailV.test(email);
-            },
-            messages: 'Please enter password in the correct format. 8-15 Characters, 1 uppercase, 1 lowercase, 1 number and 1 special character'
-        }
+        // validate: {
+        //     validator: function(email) {
+        //         let emailV = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+        //         return emailV.test(email);
+        //     },
+        //     messages: 'Please enter password in the correct format. 8-15 Characters, 1 uppercase, 1 lowercase, 1 number and 1 special character'
+        // }
     },
     age: {
         type: Number,
@@ -27,6 +27,12 @@ const TraineeSchema = new Schema({
     batch: {
         type: String,
         enum: ['January', 'March', 'July', 'October']
+    },
+    photo: {
+        type: String,
+    },
+    trainer: {
+        type: String,
     }
 });
 
@@ -44,4 +50,15 @@ const ClassesSchema = new Schema({
 });
 const ClassModel = mongoose.model('classes', ClassesSchema);
 
-module.exports = { TraineeModel, ClassModel };
+const TrainerSchema = new Schema({
+    name: {
+        type: String,
+        required: [true, "Please send the name of the Trainer!"],
+    },
+    active: {
+        type: Boolean,
+    }
+});
+const TrainerModel = mongoose.model('trainers', TrainerSchema);
+
+module.exports = { TraineeModel, ClassModel, TrainerModel };

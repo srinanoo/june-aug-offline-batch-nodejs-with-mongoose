@@ -1,4 +1,4 @@
-const { TraineeModel } = require('../models/traineeModel');
+const { TraineeModel, TrainerModel } = require('../models/traineeModel');
 
 // Read the file content using Async
 async function readTrainees(req, res) {
@@ -12,6 +12,27 @@ async function readTrainees(req, res) {
             res.json({"data": results, "msg": "success"});
         else
             res.json({"data": [], "msg": "Trainee not found!"});
+
+        // console.log(obj);
+        // TraineeModel.find(obj).then(results => res.json({"data": results, "msg": "success"}));
+    
+    } catch (err) {
+        res.json({ "error": err.message });
+    }
+}
+
+// Read the file content using Async
+async function readTrainers(req, res) {
+    try {
+        const obj = req.body;
+        // const { name, id } = obj;
+        // const data = `{$or: [{name: ${name}}, {id: ${id}}]}`;
+
+        const results = await TrainerModel.find(obj).sort({"_id": -1});
+        if(results.length > 0)
+            res.json({"data": results, "msg": "success"});
+        else
+            res.json({"data": [], "msg": "Trainer not found!"});
 
         // console.log(obj);
         // TraineeModel.find(obj).then(results => res.json({"data": results, "msg": "success"}));
@@ -36,11 +57,29 @@ async function readSpecificTrainee(req, res) {
     }
 }
 
+// Read the file content using Async
+async function readSpecificTrainer(req, res) {
+    try {
+        const obj = req.params.id;
+        // console.log(obj);
+        const results = await TrainerModel.find({"_id": obj}).sort({"_id": -1});
+        console.log(results);
+        if(results.length > 0)
+            res.json({"data": results, "msg": "success"});
+        else
+            res.json({"data": [], "msg": "Trainer not found!"});
+    } catch (err) {
+        res.json({ "error": err.message });
+    }
+}
+
 // Write the file content using Async
 async function createTrainee(req, res) {
     try {
-        const obj = req.body;
+        let obj = req.body;
         console.log(obj);
+        const photo = req.protocol + '://' + req.get('host') + "/uploads/" + req.file.filename;
+        obj.photo = photo;
     
         if(JSON.stringify(obj) !== "{}") {
             const resultsArr = await TraineeModel.find({"name": obj.name});
@@ -112,7 +151,9 @@ async function updateTrainee(req, res) {
 
 module.exports = {
     readTrainees,
+    readTrainers,
     readSpecificTrainee,
+    readSpecificTrainer,
     createTrainee,
     updateTrainee,
     deleteTrainee
