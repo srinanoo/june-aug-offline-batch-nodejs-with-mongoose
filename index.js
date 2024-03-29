@@ -5,9 +5,10 @@ require('dotenv').config();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors({
-    origin:['http://127.0.0.1:5173', 'http://localhost:5173', ]
-}));
+// app.use(cors({
+//     origin:['http://127.0.0.1:5173', 'http://localhost:5173', ]
+// }));
+app.use(cors());
 
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
